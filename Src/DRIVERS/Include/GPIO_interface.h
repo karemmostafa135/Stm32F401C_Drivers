@@ -114,4 +114,7 @@ GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config);
 
 
 GPIO_Error_t GPIO_Set_Pin_Value(void * port,u32 Pin_num,u32 value);
+
+
+u32 GPIO_Get_Pin_Value(void * port,u32 Pin_num);
 #endif
