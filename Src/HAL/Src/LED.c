@@ -1,5 +1,6 @@
-#include "LED.h"
 #include "GPIO_interface.h"
+#include "LED.h"
+#include "LED_Cfg.h"
 
 extern const led_cfg_t leds[_led_num];
 
@@ -17,9 +18,10 @@ void LED_Init(){
 				leds[counter].pin,
 				(leds[counter].current_state^leds[counter].connection));
 }
-	Void LED_Set_State(u32 led,u8 status){
+}
+	void LED_Set_State(u32 led,u8 status){
 		GPIO_Set_Pin_Value(
-						leds[led].Port_num,
-						leds[led].Pin_num,
-						(status^leds[counter].connection));
+						leds[led].port,
+						leds[led].pin,
+						leds[led].connection^status);
 	}
