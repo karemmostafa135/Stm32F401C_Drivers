@@ -46,7 +46,7 @@ switch(Get_read){
 case HSI: ready_status=((RCC->CR>>HSI_RDY)&1); break;
 case HSE: ready_status=((RCC->CR>>HSE_RDY)&1); break;
 case PLL: ready_status=((RCC->CR>>PLL_RDY)&1); break;
-defulat:   ready_status=2; 		=break;
+default:   ready_status=2; 		break;
 }
 return ready_status;
 }

@@ -61,18 +61,28 @@ GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config){
 	return Loc_Error_Status;
 }
 
-GPIO_Error_t GPIO_Set_Pin_Value(void * port,u32 Pin_num,u32 value){
-	GPIO_Error_t Error_status=GPIO_Ok;
-	switch(value){
-	case PIN_HIGH: ((GPIO_t*)(port->Port_num))->BSRR|=(PIN_HIGH<<Pin_num); break;
-	case PIN_LOW:  ((GPIO_t*)(port->Port_num))->BSRR|=(PIN_HIGH<<(Pin_num+HALF_WORD)); break;
-	defualt : Error_status =GPIO_Nok;	break;
-	}
-	return Error_status;
+
+GPIO_Error_t GPIO_Set_Pin_Value(void *port, u32 Pin_num, u32 value) {
+    GPIO_Error_t Error_status = GPIO_Ok;
+
+    switch(value) {
+        case PIN_HIGH:
+            ((GPIO_t*)(port))->BSRR |= (1U << Pin_num);
+            break;
+        case PIN_LOW:
+            ((GPIO_t*)(port))->BSRR |= (1U << (Pin_num + HALF_WORD));
+            break;
+        default:
+            Error_status = GPIO_Nok;
+            break;
+    }
+
+    return Error_status;
 }
 
+
 u32 GPIO_Get_Pin_Value(void * port,u32 Pin_num){
-	return ((GPIO_t*)(port->Port_num))->IDR&(1<<Pin_num) ;
+	return (((GPIO_t*)(port))->IDR&(1<<Pin_num)) ;
 }
 
 
