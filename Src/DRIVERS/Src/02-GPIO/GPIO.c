@@ -1,6 +1,9 @@
 #include "GPIO_interface.h"
 #include "STD_types.h"
 
+/****************** for validation ***************/
+#define NULL				0
+#define MAX_PINS_NUMBER		15
 
 #define HALF_WORD			16
 /******** Get Pin Configuration mask *******/
@@ -48,8 +51,8 @@ GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config){
 
 		/************** to configure the OTYPER Register ********/
 		Loc_OTYPER_Helper=((GPIO_t*)(Pin_Config->Port_num))->OTYPER;
-		Loc_OTYPER_Helper&=~(RESET_OTYPER<<(2*Pin_Config->Pin_num));
-		Loc_OTYPER_Helper|=((GET_OTYPER&Pin_Config->Mode)<<(2*Pin_Config->Pin_num));
+		Loc_OTYPER_Helper&=~(RESET_OTYPER<<(Pin_Config->Pin_num));
+		Loc_OTYPER_Helper|=((GET_OTYPER&Pin_Config->Mode)<<(Pin_Config->Pin_num));
 		((GPIO_t*)(Pin_Config->Port_num))->OTYPER=Loc_OTYPER_Helper;
 
 		/************** to configure the OSPEEDR Register ********/
@@ -67,10 +70,10 @@ GPIO_Error_t GPIO_Set_Pin_Value(void *port, u32 Pin_num, u32 value) {
 
     switch(value) {
         case PIN_HIGH:
-            ((GPIO_t*)(port))->BSRR |= (1U << Pin_num);
+            ((GPIO_t*)(port))->BSRR |= (1 << Pin_num);
             break;
         case PIN_LOW:
-            ((GPIO_t*)(port))->BSRR |= (1U << (Pin_num + HALF_WORD));
+            ((GPIO_t*)(port))->BSRR |= (1 << (Pin_num + HALF_WORD));
             break;
         default:
             Error_status = GPIO_Nok;
@@ -81,8 +84,21 @@ GPIO_Error_t GPIO_Set_Pin_Value(void *port, u32 Pin_num, u32 value) {
 }
 
 
-u32 GPIO_Get_Pin_Value(void * port,u32 Pin_num){
-	return (((GPIO_t*)(port))->IDR&(1<<Pin_num)) ;
+GPIO_Error_t GPIO_Get_Pin_Value(void * port,u32 Pin_num,u32* Read){
+	GPIO_Error_t Local_Error_Status=GPIO_Ok;
+	if(port==NULL){
+		Local_Error_Status=GPIO_Nok;
+	}
+	else if (Read==NULL){
+		Local_Error_Status=GPIO_Nok;
+	}
+	else if (Pin_num>MAX_PINS_NUMBER){
+		Local_Error_Status=GPIO_Nok;
+	}
+	else{
+		* Read=(((GPIO_t*)(port))->IDR&(1<<Pin_num));
+	}
+	return Local_Error_Status ;
 }
 
 
