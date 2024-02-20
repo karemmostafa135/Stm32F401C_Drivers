@@ -12,11 +12,44 @@
 /**************** needed masks *********/
 #define SYSCLK_RESET			0xFFFFFFFC
 #define GET_SYS_CLK				0x00000003
-#define RCC_BASE_ADDRESS		0x42003800
+#define RCC_BASE_ADDRESS		0x40023800
 
 /*********** to make an instance refer to the RCC registers on memory *******/
 
-static RCC_Peri_t * const RCC=(RCC_Peri_t *)(RCC_BASE_ADDRESS);
+
+typedef struct {
+volatile u32 CR;			//to disable and enable clocks
+volatile u32 PLLCFGR;
+volatile u32 CFGR;
+volatile u32 CIR;
+volatile u32 AHB1RSTR;
+volatile u32 AHB2RSTR;
+volatile u32 reserved1[2];
+volatile u32 APB1RSTR;
+volatile u32 APB2RSTR;
+volatile u32 reserved2[2];
+volatile u32 AHB1ENR;
+volatile u32 AHB2ENR;
+volatile u32 reserved3[2];
+volatile u32 APB1ENR;
+volatile u32 APB2ENR;
+volatile u32 reserved4[2];
+volatile u32 AHB1LPENR;
+volatile u32 AHB2LPENR;
+volatile u32 reserved5[2];
+volatile u32 APB1LPENR;
+volatile u32 APB2LPENR;
+volatile u32 reserved6[2];
+volatile u32 BDCR;
+volatile u32 CSR;
+volatile u32 reserved7[2];
+volatile u32 SSCGR;
+volatile u32 RCC_PLLI2SCFGR;
+volatile u32 reserved8;
+volatile u32 DCKCFGR;
+}RCC_Peri_t;
+
+ RCC_Peri_t * const RCC=((RCC_Peri_t *)(RCC_BASE_ADDRESS));
 
 RCC_Error_status_t RCC_EnableClock(u32 Copy_Clk){
 	RCC_Error_status_t Loc_ErrorStatus=RCC_Ok;
@@ -57,7 +90,7 @@ RCC_Error_status_t RCC_Set_PLLSrc(u32 Copy_PllSrc){
 	switch (Copy_PllSrc){
 	case HSI : RCC->PLLCFGR&=~(1<<PLL_SELECT_SRC_BIT); break;
 	case HSE : RCC->PLLCFGR&=(1<<PLL_SELECT_SRC_BIT); break;
-	default  :  return Loc_ErrorStatus=RCC_Nok;
+	default  : Loc_ErrorStatus=RCC_Nok;
 	}
 	return Loc_ErrorStatus;
 }
@@ -66,7 +99,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
 	u32 Local_Helper=0;
 	/** these are the max and minimum values that can be configured on M and N ***/
 	if((Copy_N_factor<2)||(Copy_N_factor>432)||(Copy_M_factor<2)||(Copy_M_factor>63)){
-		return Loc_ErrorStatus=RCC_Nok;
+		 Loc_ErrorStatus=RCC_Nok;
 	}
 	else{
 		Local_Helper=RCC->PLLCFGR;
@@ -83,15 +116,17 @@ RCC_Error_status_t RCC_Set_SysClk(u32 Copy_ClkSrc){
 	u32 Loc_SysClkHelper=RCC->CFGR;
 	Loc_SysClkHelper&=SYSCLK_RESET;
 	switch (Copy_ClkSrc){
-	case SYSCLK_HSI: Loc_SysClkHelper&=SYSCLK_HSI; RCC->CFGR=Loc_SysClkHelper;	 break;
-	case SYSCLK_HSE: Loc_SysClkHelper&=SYSCLK_HSE; RCC->CFGR=Loc_SysClkHelper;   break;
-	case SYSCLK_PLL: Loc_SysClkHelper&=SYSCLK_PLL; RCC->CFGR=Loc_SysClkHelper;	 break;
-	default  :  return Loc_ErrorStatus=RCC_Nok;
+	case SYSCLK_HSI: Loc_SysClkHelper|=SYSCLK_HSI; 	 break;
+	case SYSCLK_HSE: Loc_SysClkHelper|=SYSCLK_HSE;    break;
+	case SYSCLK_PLL: Loc_SysClkHelper|=SYSCLK_PLL; 	 break;
+	default  : Loc_ErrorStatus=RCC_Nok;
 	}
+	RCC->CFGR=Loc_SysClkHelper;
 	return Loc_ErrorStatus;
 }
 
-u8 RCC_Get_SysClk(u32 Copy_ClkSrc){
+void RCC_Get_SysClk(u32* Copy_ClkSrc){
+	*Copy_ClkSrc	=((RCC->CFGR>>2)&GET_SYS_CLK);
 	return ((RCC->CFGR>>2)&GET_SYS_CLK); // to get the two digits which repersents the current system clock
 }
 

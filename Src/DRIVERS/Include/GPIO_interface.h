@@ -78,18 +78,6 @@ typedef enum {
 }
 GPIO_Speed_t;
 
-typedef struct {
-	volatile u32 MODER;
-	volatile u32 OTYPER;
-	volatile u32 OSPEEDR;
-	volatile u32 PUPDR;
-	volatile u32 IDR;
-	volatile u32 ODR;
-	volatile u32 BSRR;
-	volatile u32 LCKR;
-	volatile u32 AFRL;
-	volatile u32 AFRH;
-}GPIO_t;
 
 typedef struct{
 	void * Port_num;
@@ -116,5 +104,5 @@ GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config);
 GPIO_Error_t GPIO_Set_Pin_Value(void * port,u32 Pin_num,u32 value);
 
 
-u32 GPIO_Get_Pin_Value(void * port,u32 Pin_num);
+GPIO_Error_t GPIO_Get_Pin_Value(void * port,u32 Pin_num,u32* Read);
 #endif

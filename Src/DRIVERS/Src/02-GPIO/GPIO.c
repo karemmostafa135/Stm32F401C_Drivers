@@ -18,48 +18,63 @@
 #define RESET_SPEED		0x3
 
 
+typedef struct {
+	volatile u32 MODER;
+	volatile u32 OTYPER;
+	volatile u32 OSPEEDR;
+	volatile u32 PUPDR;
+	volatile u32 IDR;
+	volatile u32 ODR;
+	volatile u32 BSRR;
+	volatile u32 LCKR;
+	volatile u32 AFRL;
+	volatile u32 AFRH;
+}GPIO_t;
+
 
 
 GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config){
-	u32 Loc_PUPDR_Helper,Loc_MODER_Helper,Loc_OTYPER_Helper,Loc_OSPEEDR_Helper;
+	u32 Loc_Helper,Loc_PUPDR_Value,Loc_MODER_Value,Loc_OTYPER_Value;
 
 	GPIO_Error_t Loc_Error_Status=GPIO_Ok;
 
 	if ((Pin_Config->Pin_num<GPIO_PIN0)||(Pin_Config->Pin_num>GPIO_PIN15)){
 		Loc_Error_Status=GPIO_Wrong_Pin_Config;
 	}
-	else if((Pin_Config->Speed>GPIO_SPEED_VERY_HIGH)||(Pin_Config->Speed>GPIO_SPEED_LOW)){
+	else if((Pin_Config->Speed>GPIO_SPEED_VERY_HIGH)||(Pin_Config->Speed<GPIO_SPEED_LOW)){
 		Loc_Error_Status=GPIO_Wrong_Speed_Config;
 	}
-	else if((Pin_Config->Mode>GPIO_MODE_INPUT_FLOATING)||(Pin_Config->Mode>GPIO_MODE_ANALOG)) {
+	else if((Pin_Config->Mode<GPIO_MODE_INPUT_FLOATING)||(Pin_Config->Mode>GPIO_MODE_ANALOG)) {
 		Loc_Error_Status=GPIO_Wrong_Mode_Config;
 	}
 	else {
-
-
+		Loc_PUPDR_Value=(Pin_Config->Mode&GET_PUPDR);
+		Loc_MODER_Value=((Pin_Config->Mode&GET_MODER)>>3);
+		Loc_OTYPER_Value=((Pin_Config->Mode&GET_OTYPER)>>2);
 		/************** to configure the PUPDR Register ********/
-		Loc_PUPDR_Helper=((GPIO_t*)(Pin_Config->Port_num))->PUPDR;
-		Loc_PUPDR_Helper&=~(RESET_PUPDR<<(2*Pin_Config->Pin_num));
-		Loc_PUPDR_Helper|=((GET_PUPDR&Pin_Config->Mode)<<(2*Pin_Config->Pin_num));
-		((GPIO_t*)(Pin_Config->Port_num))->PUPDR=Loc_PUPDR_Helper;
+
+		Loc_Helper=((GPIO_t*)(Pin_Config->Port_num))->PUPDR;
+		Loc_Helper&=~(RESET_PUPDR<<(2*Pin_Config->Pin_num));
+		Loc_Helper|=Loc_PUPDR_Value<<(2*Pin_Config->Pin_num);
+		((GPIO_t*)(Pin_Config->Port_num))->PUPDR=Loc_Helper;
 
 		/************** to configure the MODER Register ********/
-		Loc_MODER_Helper=((GPIO_t*)(Pin_Config->Port_num))->MODER;
-		Loc_MODER_Helper&=~(RESET_MODER<<(2*Pin_Config->Pin_num));
-		Loc_MODER_Helper|=((GET_MODER&Pin_Config->Mode)<<(2*Pin_Config->Pin_num));
-		((GPIO_t*)(Pin_Config->Port_num))->MODER=Loc_MODER_Helper;
+		Loc_Helper=((GPIO_t*)(Pin_Config->Port_num))->MODER;
+		Loc_Helper&=~(RESET_MODER<<(2*Pin_Config->Pin_num));
+		Loc_Helper|=Loc_MODER_Value<<(2*Pin_Config->Pin_num);
+		((GPIO_t*)(Pin_Config->Port_num))->MODER=Loc_Helper;
 
 		/************** to configure the OTYPER Register ********/
-		Loc_OTYPER_Helper=((GPIO_t*)(Pin_Config->Port_num))->OTYPER;
-		Loc_OTYPER_Helper&=~(RESET_OTYPER<<(Pin_Config->Pin_num));
-		Loc_OTYPER_Helper|=((GET_OTYPER&Pin_Config->Mode)<<(Pin_Config->Pin_num));
-		((GPIO_t*)(Pin_Config->Port_num))->OTYPER=Loc_OTYPER_Helper;
+		Loc_Helper=((GPIO_t*)(Pin_Config->Port_num))->OTYPER;
+		Loc_Helper&=~(RESET_OTYPER<<(Pin_Config->Pin_num));
+		Loc_Helper|=Loc_OTYPER_Value<<(Pin_Config->Pin_num);
+		((GPIO_t*)(Pin_Config->Port_num))->OTYPER=Loc_Helper;
 
 		/************** to configure the OSPEEDR Register ********/
-		Loc_OSPEEDR_Helper=((GPIO_t*)(Pin_Config->Port_num))->OSPEEDR;
-		Loc_OSPEEDR_Helper&=~(RESET_SPEED<<(2*Pin_Config->Pin_num));
-		Loc_OSPEEDR_Helper|= (Pin_Config->Speed<<(2*Pin_Config->Pin_num));
-		((GPIO_t*)(Pin_Config->Port_num))->OSPEEDR=Loc_OSPEEDR_Helper;
+		Loc_Helper=((GPIO_t*)(Pin_Config->Port_num))->OSPEEDR;
+		Loc_Helper&=~(RESET_SPEED<<(2*Pin_Config->Pin_num));
+		Loc_Helper|= (Pin_Config->Speed<<(2*Pin_Config->Pin_num));
+		((GPIO_t*)(Pin_Config->Port_num))->OSPEEDR=Loc_Helper;
 	}
 	return Loc_Error_Status;
 }
@@ -96,7 +111,7 @@ GPIO_Error_t GPIO_Get_Pin_Value(void * port,u32 Pin_num,u32* Read){
 		Local_Error_Status=GPIO_Nok;
 	}
 	else{
-		* Read=(((GPIO_t*)(port))->IDR&(1<<Pin_num));
+		*Read=(((GPIO_t*)(port))->IDR&(1<<Pin_num));
 	}
 	return Local_Error_Status ;
 }

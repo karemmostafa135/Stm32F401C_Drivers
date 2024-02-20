@@ -1,9 +1,9 @@
 #ifndef RCC_INTERFACE_H
 #define RCC_INTERFACE_H
 /************* options for System Clock ***********/
-#define SYSCLK_HSI 		0xFFFFFFFC
-#define SYSCLK_HSE		0xFFFFFFFD
-#define SYSCLK_PLL		0xFFFFFFFE
+#define SYSCLK_HSI 		0x0000000C
+#define SYSCLK_HSE		0x0000000D
+#define SYSCLK_PLL		0x0000000E
 
 /************* options for enable clocks ***********/
 #define  HSI				0x00000001
@@ -104,25 +104,7 @@ typedef unsigned int u32 ;
 typedef unsigned char u8 ;
 typedef unsigned short int 	u16;
 
-typedef struct {
-volatile u32 CR;			//to disable and enable clocks
-volatile u32 PLLCFGR;
-volatile u32 CFGR;
-volatile u32 CIR;
-volatile u32 AHB1RSTR;
-volatile u32 AHB2RSTR;
-volatile u32 APB1RSTR;
-volatile u32 APB2RSTR;
-volatile u32 AHB1ENR;
-volatile u32 AHB2ENR;
-volatile u32 APB1ENR;
-volatile u32 APB2ENR;
-volatile u32 AHB1LPENR;
-volatile u32 AHB2LPENR;
-volatile u32 APB1LPENR;
-volatile u32 APB2LPENR;
-volatile u32 BDCR;
-}RCC_Peri_t;
+
 
 
 typedef enum{
@@ -161,6 +143,25 @@ RCC_Error_status_t RCC_EnableClock(u32 Copy_Clk);
   * @constrains before choosing any source to PLL make sure it is on and ready
 
   */
+/**
+ *@brief to get if clock is ready or not
+ *@options
+ *1/HSI
+ *1/HSE
+ *1/PLL
+ *@return 1 if read 0 if not and 2 if wrong paramter
+ */
+ u32 RCC_Get_Ready_Status(u32 Get_read );
+
+
+ /****
+   * @brief function to set the clock source for pll
+   * @options
+   * 1/HSI
+   * 2/HSE
+   * @constrains before choosing any source to PLL make sure it is on and ready
+
+   */
 
 RCC_Error_status_t RCC_Set_PLLSrc(u32 Copy_PllSrc);
 
@@ -194,7 +195,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
     * 3/PLL represented by 2
     */
 
-  u8 RCC_Get_SysClk(u32 Copy_ClkSrc);
+  void RCC_Get_SysClk(u32* Copy_ClkSrc);
 
   /*
    * @brief to enable and disable an peripheral connected on AHB1 bus

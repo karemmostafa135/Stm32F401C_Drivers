@@ -1,10 +1,14 @@
 #include "GPIO_interface.h"
+#include "RCC_interface.h"
 #include "LED.h"
 #include "LED_Cfg.h"
 
 extern const led_cfg_t leds[_led_num];
 
 void LED_Init(){
+	RCC_AHB1ENR_Enable_Disable_peri(AHB1ENR_GPIOAEN, ENABLE_PERI);
+	RCC_AHB1ENR_Enable_Disable_peri(AHB1ENR_GPIOBEN, ENABLE_PERI);
+	RCC_AHB1ENR_Enable_Disable_peri(AHB1ENR_GPIOCEN, ENABLE_PERI);
 	u32 counter=0;
 	Pin_Config_t pin;
 	pin.Mode=GPIO_MODE_OUTPUT_PP;
