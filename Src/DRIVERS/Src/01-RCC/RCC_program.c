@@ -94,17 +94,20 @@ RCC_Error_status_t RCC_Set_PLLSrc(u32 Copy_PllSrc){
 	}
 	return Loc_ErrorStatus;
 }
+
+
 RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_factor ){
 	RCC_Error_status_t Loc_ErrorStatus=RCC_Ok;
-	u32 Local_Helper=0;
+	u32 Local_Helper=0,P_Factor_Value;
 	/** these are the max and minimum values that can be configured on M and N ***/
 	if((Copy_N_factor<2)||(Copy_N_factor>432)||(Copy_M_factor<2)||(Copy_M_factor>63)){
 		 Loc_ErrorStatus=RCC_Nok;
 	}
 	else{
+		P_Factor_Value=((Copy_P_factor/2)-1);
 		Local_Helper=RCC->PLLCFGR;
 		Local_Helper&=PLL_RESET_MNP_MASK;
-		Local_Helper|=(Copy_N_factor<<6)|(Copy_M_factor);
+		Local_Helper|=(Copy_N_factor<<6)|(Copy_M_factor)|P_Factor_Value;
 		RCC->PLLCFGR=Local_Helper;
 	}
 	return Loc_ErrorStatus;
