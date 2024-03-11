@@ -8,7 +8,7 @@ extern const SWITCH_t Switches[_Switch_num];
 
 void SWITCH_Init(){
 Pin_Config_t pin;
-u32 counter=0;
+uint32_t counter=0;
 pin.Speed=GPIO_SPEED_HIGH;
 for (counter=0;counter<_Switch_num;counter++){
 	pin.Mode=Switches[counter].mode;
@@ -18,9 +18,9 @@ for (counter=0;counter<_Switch_num;counter++){
 }
 }
 
-SWITCH_Errors_t SWITCH_Get_Read(u32 Switch_num,u32* Read){
+SWITCH_Errors_t SWITCH_Get_Read(uint32_t Switch_num,uint32_t* Read){
 	SWITCH_Errors_t Local_Error=SWITCH_Ok;
-	u32 helper;
+	uint32_t helper;
 if (Switch_num>_Switch_num){
 	Local_Error=SWITCH_Nok;
 }

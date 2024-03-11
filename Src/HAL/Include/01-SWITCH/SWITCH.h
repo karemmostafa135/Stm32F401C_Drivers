@@ -1,7 +1,7 @@
 #ifndef SWITCH_H
 #define SWITCH_H
-typedef unsigned char u8;
-typedef unsigned int u32;
+
+#include "STD_types.h"
 
 typedef enum {
 	SWITCH_Nok,
@@ -11,8 +11,8 @@ typedef enum {
 
 typedef struct{
 		void * port;
-		u32 pin;
-		u8 mode;
+		uint32_t pin;
+		uint8_t mode;
 }SWITCH_t;
 
 void SWITCH_Init();
@@ -22,5 +22,5 @@ void SWITCH_Init();
  * if Read=1 this means switch is Pressed  if Read=0 this means switch is Not Pressed
  */
 
-SWITCH_Errors_t SWITCH_Get_Read(u32 Switch_num,u32* Read);
+SWITCH_Errors_t SWITCH_Get_Read(uint32_t Switch_num,uint32_t* Read);
 #endif

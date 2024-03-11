@@ -1,5 +1,7 @@
 #ifndef RCC_INTERFACE_H
 #define RCC_INTERFACE_H
+#include "STD_types.h"
+
 /************* options for System Clock ***********/
 #define SYSCLK_HSI 		0x0000000C
 #define SYSCLK_HSE		0x0000000D
@@ -100,9 +102,7 @@
 /******************** typedef sector ***********/
 
 
-typedef unsigned int u32 ;
-typedef unsigned char u8 ;
-typedef unsigned short int 	u16;
+
 
 
 
@@ -121,7 +121,7 @@ typedef enum{
  * @return if return equal 0 this means its not ok and if its 1 it means it is okay
  */
 
-RCC_Error_status_t RCC_EnableClock(u32 Copy_Clk);
+RCC_Error_status_t RCC_EnableClock(uint32_t Copy_Clk);
 
  /*******
   * @brief function to disable a clock on the system
@@ -133,7 +133,7 @@ RCC_Error_status_t RCC_EnableClock(u32 Copy_Clk);
   * @constrains before disable any clock make sure it is not the system clock
   */
 
- RCC_Error_status_t RCC_DisableClock(u32 Copy_Clk);
+ RCC_Error_status_t RCC_DisableClock(uint32_t Copy_Clk);
 
  /****
   * @brief function to set the clock source for pll
@@ -151,7 +151,7 @@ RCC_Error_status_t RCC_EnableClock(u32 Copy_Clk);
  *1/PLL
  *@return 1 if read 0 if not and 2 if wrong paramter
  */
- u32 RCC_Get_Ready_Status(u32 Get_read );
+ uint32_t RCC_Get_Ready_Status(uint32_t Get_read );
 
 
  /****
@@ -163,7 +163,7 @@ RCC_Error_status_t RCC_EnableClock(u32 Copy_Clk);
 
    */
 
-RCC_Error_status_t RCC_Set_PLLSrc(u32 Copy_PllSrc);
+RCC_Error_status_t RCC_Set_PLLSrc(uint32_t Copy_PllSrc);
 
 /*
  * @brief functions to set the PLL configurations factors
@@ -173,7 +173,7 @@ RCC_Error_status_t RCC_Set_PLLSrc(u32 Copy_PllSrc);
  * 3/Copy_P_factor 2,4,6,8
  */
 
-RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_factor );
+RCC_Error_status_t RCC_PllConfig(uint32_t Copy_N_factor,uint32_t Copy_M_factor,uint32_t Copy_P_factor );
 
 /****
   * @brief function to set the clock source for system
@@ -185,7 +185,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
 
   */
 
-  RCC_Error_status_t RCC_Set_SysClk(u32 Copy_ClkSrc);
+  RCC_Error_status_t RCC_Set_SysClk(uint32_t Copy_ClkSrc);
 
   /****
     * @brief function to get the clock source for pll
@@ -195,7 +195,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
     * 3/PLL represented by 2
     */
 
-  void RCC_Get_SysClk(u32* Copy_ClkSrc);
+  void RCC_Get_SysClk(uint32_t* Copy_ClkSrc);
 
   /*
    * @brief to enable and disable an peripheral connected on AHB1 bus
@@ -214,7 +214,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
    * 2/DISABLE_PERI
    */
 
-  RCC_Error_status_t RCC_AHB1ENR_Enable_Disable_peri(u8 Copy_Peri,u8 Copy_Peri_Mode);
+  RCC_Error_status_t RCC_AHB1ENR_Enable_Disable_peri(uint8_t Copy_Peri,uint8_t Copy_Peri_Mode);
 
   /*
    * @brief to enable and disable an peripheral connected on AHB2 bus
@@ -225,7 +225,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
    * 2/DISABLE_PERI
    */
 
-  RCC_Error_status_t RCC_AHB2ENR_Enable_Disable_peri(u8 Copy_Peri,u8 Copy_Peri_Mode);
+  RCC_Error_status_t RCC_AHB2ENR_Enable_Disable_peri(uint8_t Copy_Peri,uint8_t Copy_Peri_Mode);
 
   /*
      * @brief to enable and disable an peripheral connected on APB1 bus
@@ -247,7 +247,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
      * 2/DISABLE_PERI
      */
 
-  RCC_Error_status_t RCC_APB1ENR_Enable_Disable_peri(u8 Copy_Peri,u8 Copy_Peri_Mode);
+  RCC_Error_status_t RCC_APB1ENR_Enable_Disable_peri(uint8_t Copy_Peri,uint8_t Copy_Peri_Mode);
 
 
       /*
@@ -269,7 +269,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
        * 2/DISABLE_PERI
        */
 
-  RCC_Error_status_t RCC_APB2ENR_Enable_Disable_peri(u8 Copy_Peri,u8 Copy_Peri_Mode);
+  RCC_Error_status_t RCC_APB2ENR_Enable_Disable_peri(uint8_t Copy_Peri,uint8_t Copy_Peri_Mode);
 
     /*
            * @brief to enable and disable an peripheral connected on AHB1L bus
@@ -290,7 +290,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
            * 2/DISABLE_PERI
            */
 
-  RCC_Error_status_t RCC_AHB1LPENR_Enable_Disable_peri(u8 Copy_Peri,u8 Copy_Peri_Mode);
+  RCC_Error_status_t RCC_AHB1LPENR_Enable_Disable_peri(uint8_t Copy_Peri,uint8_t Copy_Peri_Mode);
 
         /*
           * @brief to enable and disable an peripheral connected on AHB2LPENR bus
@@ -301,7 +301,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
           * 2/DISABLE_PERI
           */
 
-  RCC_Error_status_t RCC_AHB2LPENR_Enable_Disable_peri(u8 Copy_Peri,u8 Copy_Peri_Mode);
+  RCC_Error_status_t RCC_AHB2LPENR_Enable_Disable_peri(uint8_t Copy_Peri,uint8_t Copy_Peri_Mode);
 
         /*
             * @brief to enable and disable an peripheral connected on APB1LP bus
@@ -323,7 +323,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
             * 2/DISABLE_PERI
             */
 
-  RCC_Error_status_t RCC_APB1LPENR_Enable_Disable_peri(u8 Copy_Peri,u8 Copy_Peri_Mode);
+  RCC_Error_status_t RCC_APB1LPENR_Enable_Disable_peri(uint8_t Copy_Peri,uint8_t Copy_Peri_Mode);
 /*
 			* @brief to enable and disable an peripheral connected on APB2LP bus
 			* @options for peripherals
@@ -343,7 +343,7 @@ RCC_Error_status_t RCC_PllConfig(u32 Copy_N_factor,u32 Copy_M_factor,u32 Copy_P_
 			* 2/DISABLE_PERI
     */
 
-  RCC_Error_status_t RCC_APB2LPENR_Enable_Disable_peri(u8 Copy_Peri,u8 Copy_Peri_Mode);
+  RCC_Error_status_t RCC_APB2LPENR_Enable_Disable_peri(uint8_t Copy_Peri,uint8_t Copy_Peri_Mode);
 
 
 #endif

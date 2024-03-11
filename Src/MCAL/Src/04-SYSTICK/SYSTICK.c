@@ -21,6 +21,8 @@ static uint32_t Timer_Current_Freq=CLK_FREQUENCY; // to get the timer frequency
 
 static SYSTICK_CallBk SYSTICK_CallBack_Func;	// pointer to get the call bk function from user
 
+static uint32_t Global_SysTick_Counts=0;	// to count the number of entering timer handler
+
 void SYSTICK_Start(){
 	SYSTICK->STK_CTRL|=TICKINT_ENABLE; //to enable the systick interrupt
 	SYSTICK->STK_CTRL|=COUNTER_ENABLE;	//to start the counter
@@ -55,14 +57,14 @@ SYSTICK_Errors_t SYSTICK_Set_Prescaler(uint32_t Copy_Prescaler_Value){
 SYSTICK_Errors_t SYSTICK_Setms(uint32_t Copy_Required_Time)
 {
 	SYSTICK_Errors_t Local_Error_Status=SYSTICK_Ok;
-	uint32_t Timer_Helper=0;
-	Timer_Helper=((Copy_Required_Time*Timer_Current_Freq)/1000)-1;
-	if(Timer_Helper<MINIMUM_COUNTER_REG_CAPACITY||Timer_Helper>MAXIMUM_COUNTER_REG_CAPACITY){
+	uint32_t Timer_Counts=0;
+	Timer_Counts=(Copy_Required_Time*(Timer_Current_Freq/1000))-1;
+	if(Timer_Counts<MINIMUM_COUNTER_REG_CAPACITY||Timer_Counts>MAXIMUM_COUNTER_REG_CAPACITY){
 		Local_Error_Status=SYSTICK_Wrong_Input;
 	}
 	else{
 		SYSTICK->STK_VAL=0;	//to clear the counting register
-		SYSTICK->STK_LOAD=Timer_Helper; // to set the time in the preload register
+		SYSTICK->STK_LOAD=Timer_Counts; // to set the time in the preload register
 
 	}
 return Local_Error_Status;
@@ -91,6 +93,9 @@ void SysTick_Handler (void)
 {
 if(SYSTICK_CallBack_Func){
 	SYSTICK_CallBack_Func();
+}
+else{
+
 }
 
 }

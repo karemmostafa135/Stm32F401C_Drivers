@@ -9,7 +9,7 @@ void LED_Init(){
 	RCC_AHB1ENR_Enable_Disable_peri(AHB1ENR_GPIOAEN, ENABLE_PERI);
 	RCC_AHB1ENR_Enable_Disable_peri(AHB1ENR_GPIOBEN, ENABLE_PERI);
 	RCC_AHB1ENR_Enable_Disable_peri(AHB1ENR_GPIOCEN, ENABLE_PERI);
-	u32 counter=0;
+	uint32_t counter=0;
 	Pin_Config_t pin;
 	pin.Mode=GPIO_MODE_OUTPUT_PP;
 	pin.Speed=GPIO_SPEED_HIGH;
@@ -23,7 +23,7 @@ void LED_Init(){
 				(leds[counter].current_state^leds[counter].connection));
 }
 }
-	void LED_Set_State(u32 led,u8 status){
+	void LED_Set_State(uint32_t led,uint8_t status){
 		GPIO_Set_Pin_Value(
 						leds[led].port,
 						leds[led].pin,

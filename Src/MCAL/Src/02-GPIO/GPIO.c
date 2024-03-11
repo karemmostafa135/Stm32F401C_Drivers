@@ -19,22 +19,22 @@
 
 
 typedef struct {
-	volatile u32 MODER;
-	volatile u32 OTYPER;
-	volatile u32 OSPEEDR;
-	volatile u32 PUPDR;
-	volatile u32 IDR;
-	volatile u32 ODR;
-	volatile u32 BSRR;
-	volatile u32 LCKR;
-	volatile u32 AFRL;
-	volatile u32 AFRH;
+	volatile uint32_t MODER;
+	volatile uint32_t OTYPER;
+	volatile uint32_t OSPEEDR;
+	volatile uint32_t PUPDR;
+	volatile uint32_t IDR;
+	volatile uint32_t ODR;
+	volatile uint32_t BSRR;
+	volatile uint32_t LCKR;
+	volatile uint32_t AFRL;
+	volatile uint32_t AFRH;
 }GPIO_t;
 
 
 
 GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config){
-	u32 Loc_Helper,Loc_PUPDR_Value,Loc_MODER_Value,Loc_OTYPER_Value;
+	uint32_t Loc_Helper,Loc_PUPDR_Value,Loc_MODER_Value,Loc_OTYPER_Value;
 
 	GPIO_Error_t Loc_Error_Status=GPIO_Ok;
 
@@ -80,7 +80,7 @@ GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config){
 }
 
 
-GPIO_Error_t GPIO_Set_Pin_Value(void *port, u32 Pin_num, u32 value) {
+GPIO_Error_t GPIO_Set_Pin_Value(void *port, uint32_t Pin_num, uint32_t value) {
     GPIO_Error_t Error_status = GPIO_Ok;
 
     switch(value) {
@@ -99,7 +99,7 @@ GPIO_Error_t GPIO_Set_Pin_Value(void *port, u32 Pin_num, u32 value) {
 }
 
 
-GPIO_Error_t GPIO_Get_Pin_Value(void * port,u32 Pin_num,u32* Read){
+GPIO_Error_t GPIO_Get_Pin_Value(void * port,uint32_t Pin_num,uint32_t* Read){
 	GPIO_Error_t Local_Error_Status=GPIO_Ok;
 	if(port==NULL){
 		Local_Error_Status=GPIO_Nok;

@@ -30,6 +30,7 @@ void SYSTICK_Stop();
  *@brief to set the precaler value r
  *@options
  *1/NO_PRESCALER 2/PRESCALER_DIVIDE_BY_8
+ *@default NO_PRESCALER
  */
 
 

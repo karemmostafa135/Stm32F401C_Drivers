@@ -56,7 +56,7 @@
 
 #define   GPIOC	 ((void *)(0x40020800))
 
-typedef unsigned int u32;
+typedef unsigned int uint32_t;
 
 
 
@@ -81,8 +81,8 @@ GPIO_Speed_t;
 
 typedef struct{
 	void * Port_num;
-	u32 Pin_num;
-	u32 Mode;
+	uint32_t Pin_num;
+	uint32_t Mode;
 	GPIO_Speed_t Speed;
 
 }Pin_Config_t;
@@ -101,8 +101,8 @@ GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config);
  */
 
 
-GPIO_Error_t GPIO_Set_Pin_Value(void * port,u32 Pin_num,u32 value);
+GPIO_Error_t GPIO_Set_Pin_Value(void * port,uint32_t Pin_num,uint32_t value);
 
 
-GPIO_Error_t GPIO_Get_Pin_Value(void * port,u32 Pin_num,u32* Read);
+GPIO_Error_t GPIO_Get_Pin_Value(void * port,uint32_t Pin_num,uint32_t* Read);
 #endif

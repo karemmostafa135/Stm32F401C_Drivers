@@ -1,6 +1,7 @@
 #ifndef NVIC_H
 #define NVIC_H
 
+#include "STD_types.h"
 #include <stdio.h>
 
 
@@ -87,7 +88,7 @@
 #define PRIORITY_15   15
 
 
-typedef unsigned int	uint32_t;
+
 
 
 typedef enum {
