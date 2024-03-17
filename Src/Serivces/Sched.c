@@ -21,9 +21,9 @@ void Sched_Init(){
 
 void Sched(){
 	uint32_t idx=0;
-	Global_Number_of_Sys_Ticks++;
+	Global_Number_of_Sys_Ticks+=SCHED_TIME_IN_MS;
 	for(idx;idx<_Runnable_Count;idx++){
-			if(rInfo[idx].Cb&&Global_Number_of_Sys_Ticks%rInfo[idx].periodicty){
+			if(rInfo[idx].Cb&&~(Global_Number_of_Sys_Ticks%rInfo[idx].periodicty)){
 				rInfo[idx].Cb();
 			}
 	}
@@ -48,5 +48,4 @@ void Sched_Stop(){
 
 void Pending_Ticks_Counting(){
 	Global_Number_of_pending_Ticks++;
-	Sched();
 }

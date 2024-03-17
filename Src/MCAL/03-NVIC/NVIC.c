@@ -97,6 +97,21 @@ typedef unsigned char uint8_t;
 	}
 
 
+	NVIC_Errors_t NVIC_GetPending(uint32_t Copy_IRQValue,uint32_t *Pending_value){
+		NVIC_Errors_t Loc_Error=NVIC_Ok;
+					uint32_t Register_Helper=0,Pin_Helper=0;
+					if ((Copy_IRQValue<0)||(Copy_IRQValue>MAX_NUM_OF_INTERRUPTS)){
+						Loc_Error=NVIC_Nok;
+					}
+					else{
+					Register_Helper=Copy_IRQValue/32;
+					Pin_Helper=Copy_IRQValue%32;
+					* Pending_value=reg->NVIC_ISPR[Register_Helper]&(0x01<<Pin_Helper);
+					}
+								return Loc_Error;
+
+	}
+
 	NVIC_Errors_t NVIC_ClearPending(uint32_t Copy_IRQValue){
 					NVIC_Errors_t Loc_Error=NVIC_Ok;
 					uint32_t Register_Helper=0,Pin_Helper=0;

@@ -7,6 +7,7 @@
 #define MINIMUM_COUNTER_REG_CAPACITY	0X00000001
 #define CLK_SOURCE_PIN					2
 #define CLK_FREQUENCY					16000000
+#define EXTRA_TICK						0x00000001
 
 typedef struct{
 	uint32_t STK_CTRL;
@@ -58,7 +59,7 @@ SYSTICK_Errors_t SYSTICK_Setms(uint32_t Copy_Required_Time)
 {
 	SYSTICK_Errors_t Local_Error_Status=SYSTICK_Ok;
 	uint32_t Timer_Counts=0;
-	Timer_Counts=(Copy_Required_Time*(Timer_Current_Freq/1000))-1;
+	Timer_Counts=(Copy_Required_Time*(Timer_Current_Freq/1000))-(uint32_t)EXTRA_TICK;
 	if(Timer_Counts<MINIMUM_COUNTER_REG_CAPACITY||Timer_Counts>MAXIMUM_COUNTER_REG_CAPACITY){
 		Local_Error_Status=SYSTICK_Wrong_Input;
 	}

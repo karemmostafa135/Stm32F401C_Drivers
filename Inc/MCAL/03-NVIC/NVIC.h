@@ -2,7 +2,6 @@
 #define NVIC_H
 
 #include "STD_types.h"
-#include <stdio.h>
 
 
 #define NVIC_WINDOW_WATCHDOG_TIMER		0
@@ -121,6 +120,8 @@ NVIC_Errors_t NVIC_DisableIRQ(uint32_t Copy_IRQValue);
 
 NVIC_Errors_t NVIC_GetActiv(uint32_t Copy_IRQValue,uint32_t * Copy_Acitve_Value);
 
+
+NVIC_Errors_t NVIC_GetPending(uint32_t Copy_IRQValue ,uint32_t * Pending_value);
 
 NVIC_Errors_t NVIC_SetPending(uint32_t Copy_IRQValue);
 

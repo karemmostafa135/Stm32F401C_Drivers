@@ -25,9 +25,14 @@ const led_cfg_t leds[_led_num]={
 		.current_state=LED_STATE_OFF
 		},
 		 [Second_Led]={.port=GPIOA,
-		 		.pin=GPIO_PIN7,
+		 		.pin=GPIO_PIN1,
 		 		.connection=LED_CONN_FORWARD,
-		 		.current_state=LED_STATE_ON
+		 		.current_state=LED_STATE_OFF
+		 		},
+		[Third_led]	={.port=GPIOA,
+		 		.pin=GPIO_PIN2,
+		 		.connection=LED_CONN_FORWARD,
+		 		.current_state=LED_STATE_OFF
 		 		}
 };
 
