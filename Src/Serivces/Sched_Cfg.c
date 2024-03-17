@@ -32,7 +32,7 @@ const Runnable_t rInfo[_Runnable_Count]={
 				.Cb=led_on
 		}
 		,
-		[2]={
+		[Traffic_Lightss]={
 				.periodicty=2000,
 				.Cb=Traffic_Lights	}
 
