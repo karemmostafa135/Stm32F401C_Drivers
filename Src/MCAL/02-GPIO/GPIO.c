@@ -55,19 +55,19 @@ GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config){
 
 		Loc_Helper=((GPIO_t*)(Pin_Config->Port_num))->PUPDR;
 		Loc_Helper&=~(RESET_PUPDR<<(2*Pin_Config->Pin_num));
-		Loc_Helper|=Loc_PUPDR_Value<<(2*Pin_Config->Pin_num);
+		Loc_Helper|=(Loc_PUPDR_Value<<(2*Pin_Config->Pin_num));
 		((GPIO_t*)(Pin_Config->Port_num))->PUPDR=Loc_Helper;
 
 		/************** to configure the MODER Register ********/
 		Loc_Helper=((GPIO_t*)(Pin_Config->Port_num))->MODER;
 		Loc_Helper&=~(RESET_MODER<<(2*Pin_Config->Pin_num));
-		Loc_Helper|=Loc_MODER_Value<<(2*Pin_Config->Pin_num);
+		Loc_Helper|=(Loc_MODER_Value<<(2*Pin_Config->Pin_num));
 		((GPIO_t*)(Pin_Config->Port_num))->MODER=Loc_Helper;
 
 		/************** to configure the OTYPER Register ********/
 		Loc_Helper=((GPIO_t*)(Pin_Config->Port_num))->OTYPER;
 		Loc_Helper&=~(RESET_OTYPER<<(Pin_Config->Pin_num));
-		Loc_Helper|=Loc_OTYPER_Value<<(Pin_Config->Pin_num);
+		Loc_Helper|=(Loc_OTYPER_Value<<(Pin_Config->Pin_num));
 		((GPIO_t*)(Pin_Config->Port_num))->OTYPER=Loc_Helper;
 
 		/************** to configure the OSPEEDR Register ********/
@@ -75,6 +75,15 @@ GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config){
 		Loc_Helper&=~(RESET_SPEED<<(2*Pin_Config->Pin_num));
 		Loc_Helper|= (Pin_Config->Speed<<(2*Pin_Config->Pin_num));
 		((GPIO_t*)(Pin_Config->Port_num))->OSPEEDR=Loc_Helper;
+		if(Pin_Config->Af!=0){
+			if(Pin_Config->Pin_num<=7){
+				((GPIO_t*)(Pin_Config->Port_num))->AFRL|=(Pin_Config->Af<<(4*Pin_Config->Pin_num));
+			}
+				else if(Pin_Config->Pin_num>7){
+					((GPIO_t*)(Pin_Config->Port_num))->AFRH|=(Pin_Config->Af<<(4*Pin_Config->Pin_num));
+				}
+
+		}
 	}
 	return Loc_Error_Status;
 }
@@ -111,7 +120,7 @@ GPIO_Error_t GPIO_Get_Pin_Value(void * port,uint32_t Pin_num,uint32_t* Read){
 		Local_Error_Status=GPIO_Nok;
 	}
 	else{
-		*Read=(((GPIO_t*)(port))->IDR&(1<<Pin_num));
+		*Read=(((GPIO_t*)(port))->IDR>>Pin_num)&1;
 	}
 	return Local_Error_Status ;
 }

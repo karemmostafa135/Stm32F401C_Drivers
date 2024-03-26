@@ -1,39 +1,39 @@
 #include "Sched.h"
 #include "Sched_Cfg.h"
 
+typedef enum {
+	SWITCH_Nok,
+	SWITCH_Ok
+}SWITCH_Errors_t;
+
 
 extern void Traffic_Lights(void);
 
-extern void led_on(void)
-
-{
-	LED_Set_State(0, 1);
-
-}
-
-extern void led_off(void){
-
-		LED_Set_State(0, 0);
-
-}
+extern void Switch_task();
 
 
+
+extern void led_on1(void);
+
+extern void led_on2(void);
+
+extern void led_on3(void);
 
 
 
 const Runnable_t rInfo[_Runnable_Count]={
 		[Runnable_1]={
-				.periodicty=150,
-				.Cb=led_off
+				.periodicty=100,
+				.Cb=led_on1
 		}
 		,
 		[Runnable_2]={
-				.periodicty=100,
-				.Cb=led_on
+				.periodicty=5,
+				.Cb=Switch_task
 		}
 		,
 		[Traffic_Lightss]={
-				.periodicty=2000,
+				.periodicty=500000,
 				.Cb=Traffic_Lights	}
 
 };

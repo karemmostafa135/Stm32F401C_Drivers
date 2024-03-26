@@ -3,8 +3,8 @@
 #include "GPIO_interface.h"
 const SWITCH_t Switches[_Switch_num]={
 		[Alarm_Switch]={
-				.port=GPIOA,
-				.pin=GPIO_PIN2,
+				.port=GPIOB,
+				.pin=GPIO_PIN0,
 				.mode=GPIO_MODE_INPUT_PU
 		},
 		[Second_Switch]={

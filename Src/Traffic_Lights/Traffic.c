@@ -30,7 +30,7 @@ void Traffic_Lights(void){
 			LED_Set_State(red, LED_STATE_OFF);
 			LED_Set_State(yellow, LED_STATE_OFF);
 			LED_Set_State(green, LED_STATE_ON);
-			if(seconds==10){
+			if(seconds==12){
 				state=red;
 				seconds=0;
 			}

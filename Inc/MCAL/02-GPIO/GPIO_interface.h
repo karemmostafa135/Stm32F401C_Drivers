@@ -80,14 +80,14 @@ GPIO_Speed_t;
 
 
 typedef struct{
-	void * Port_num;
-	uint32_t Pin_num;
-	uint32_t Mode;
-	GPIO_Speed_t Speed;
-
+	volatile void * Port_num;
+	volatile uint32_t Pin_num;
+	volatile uint32_t Mode;
+	volatile GPIO_Speed_t Speed;
+	volatile uint32_t Af;
 }Pin_Config_t;
 
-/************* to configure the pin actualy on hardware *******/
+/************* to configure the pin actually on hardware *******/
 GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config);
 
 /****

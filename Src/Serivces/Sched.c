@@ -13,6 +13,7 @@ void led(void){
 }
 
 void Sched_Init(){
+	SYSTICK_Set_Prescaler(NO_PRESCALER);
 	SYSTICK_Setms(SCHED_TIME_IN_MS);
 	SYSTICK_Set_CallBack(Pending_Ticks_Counting);
 
@@ -23,7 +24,7 @@ void Sched(){
 	uint32_t idx=0;
 	Global_Number_of_Sys_Ticks+=SCHED_TIME_IN_MS;
 	for(idx;idx<_Runnable_Count;idx++){
-			if(rInfo[idx].Cb&&~(Global_Number_of_Sys_Ticks%rInfo[idx].periodicty)){
+			if((rInfo[idx].Cb)&&!(Global_Number_of_Sys_Ticks%rInfo[idx].periodicty)){
 				rInfo[idx].Cb();
 			}
 	}
