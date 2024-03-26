@@ -124,6 +124,8 @@ CR1_Helper&=CR1_RESET;
 CR1_Helper|=(Uart_Config->Oversampling<<CR1_OVER8);
 // 1 to enable the UART 0 to disable prescaler and outputs
 CR1_Helper|=(Uart_Config->UartEnable<<CR1_UE);
+// reset the status register
+((UART_Registers_t*)(UART1))->SR=0x00000000;
 // 1 1 Start bit, 9 Data bits, n Stop bit, 0 1 Start bit, 8 Data bits, n Stop bit
 CR1_Helper|=(Uart_Config->WordLength<<CR1_M);
 // 1 to enable parity ,0 to disable
@@ -200,6 +202,8 @@ void UART_SendData_AsyncZeroCopy(Buffer_t *Data_Buffer,Tx_cb Call_back){
 void UART_SendByte(Buffer_t *Data_Buffer){
 	if((Data_Buffer)&&(Data_Buffer->size==1)){
 		if(((UART_Registers_t*)(Data_Buffer->Channel))->SR&(1<<SR_TXE)){
+			Tx_User_Request[0].Tx_Buffer=Data_Buffer;
+			Tx_User_Request[0].pos=1;
 			((UART_Registers_t*)(Data_Buffer->Channel))->CR1|=(1<<CR1_TE);
 			((UART_Registers_t*)(Data_Buffer->Channel))->DR=Data_Buffer->data[0];
 		}
@@ -219,7 +223,7 @@ void UART_RecieveData_Async(Buffer_t *Data_Buffer,Tx_cb Call_back){
 		//to validate that data not NULL and length not zero of negative
 		if((Data_Buffer)&&(Data_Buffer->size>0)){
 			// to reset the SR register
-			((UART_Registers_t*)(UART1))->SR=0x00C00000;
+			((UART_Registers_t*)(UART1))->SR=0x00000000;
 			Rx_User_Request[UART1_RX_REQUEST].state=BUSY;
 			Rx_User_Request[UART1_RX_REQUEST].Rx_Buffer=Data_Buffer;
 			Rx_User_Request[UART1_RX_REQUEST].Cb=Call_back;
@@ -237,7 +241,7 @@ void UART_RecieveData_Async(Buffer_t *Data_Buffer,Tx_cb Call_back){
 
 				if((Data_Buffer)&&(Data_Buffer->size>0)){
 			// to reset the SR register
-			((UART_Registers_t*)(UART1))->SR=0x00C00000;
+			((UART_Registers_t*)(UART1))->SR=0x00000000;
 			Rx_User_Request[UART2_RX_REQUEST].state=BUSY;
 			Rx_User_Request[UART2_RX_REQUEST].Rx_Buffer=Data_Buffer;
 			Rx_User_Request[UART2_RX_REQUEST].Cb=Call_back;
@@ -271,6 +275,8 @@ void UART_RecieveData_Async(Buffer_t *Data_Buffer,Tx_cb Call_back){
 void USART1_IRQHandler(void){
 /****** to check out if the tranmission register is empty pin that caused the interrupt **************/
 if(((UART_Registers_t*)(UART1))->SR&1<<SR_TC){
+	// to clear the transmission complete pin
+		((UART_Registers_t*)(UART1))->SR&=~(1<<SR_TC);
 	/**************** to check that the current position of data is less than the buffer size*****/
 	if(Tx_User_Request[UART1_TX_REQUEST].pos<Tx_User_Request[UART1_TX_REQUEST].Tx_Buffer->size){
 	((UART_Registers_t*)(UART1))->DR=(Tx_User_Request[UART1_TX_REQUEST].Tx_Buffer->data[Tx_User_Request[UART1_TX_REQUEST].pos]);

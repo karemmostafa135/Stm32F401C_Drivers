@@ -12,7 +12,7 @@ void led_(void){}
 
 int main(void)
 {
-	/*Pin_Config_t Tx;
+	Pin_Config_t Tx;
 	Pin_Config_t Rx;
 	Tx.Port_num=GPIOB;
 	Tx.Pin_num=6;
@@ -25,11 +25,11 @@ int main(void)
    	Rx.Mode=GPIO_MODE_AF_PP;
    	Rx.Speed=GPIO_SPEED_MEDIUM;
     Rx.Af=7;
-    GPIO_PinConfig(&Rx);*/
+    GPIO_PinConfig(&Rx);
 	uint8_t arr[30]={11,23,25,6,7,8,12,9,14,35,65,88,100,30,15,20,18,20,33,74};
 		Buffer_t buf1;
 		buf1.data=arr;
-		buf1.size=1;
+		buf1.size=30;
 		buf1.Channel=UART1;
 		Uart_ConfigType c1={0};
 		c1.BaudRate=9600;
@@ -39,15 +39,18 @@ int main(void)
 		c1.ReceiveDateRegisterEmpty_Int=1;
 		c1.WordLength=0;
 		c1.TransComplete_Int=1;
-		c1.TransDateRegisterEmpty_Int=1;
+		c1.TransDateRegisterEmpty_Int=0;
 		c1.UartEnable=1;
-		//UART_SendData_AsyncZeroCopy(&buf1,led_);
 		UART_Init(&c1);
+		UART_SendData_AsyncZeroCopy(&buf1,led_);
 		//UART_SendByte(&buf1);
 		while (1)
 		{
+			for(uint16_t rx=0;rx<1000;rx){
 			uint32_t x=2;
+			GPIO_PinConfig(&Rx);
 		}
+}
 }
 /* to test gpio ,led and switch
 uint32_t counter =0;
