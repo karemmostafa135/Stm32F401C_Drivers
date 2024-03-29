@@ -3,7 +3,7 @@
 
 #include "STD_types.h"
 
-#define SCHED_TIME_IN_MS			5
+#define SCHED_TIME_IN_MS			2
 
 typedef void (*RunnableCb_t)(void);
 

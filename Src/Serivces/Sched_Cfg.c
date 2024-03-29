@@ -11,6 +11,7 @@ extern void Traffic_Lights(void);
 
 extern void Switch_task();
 
+extern void LCD_Task();
 
 
 extern void led_on1(void);
@@ -19,12 +20,12 @@ extern void led_on2(void);
 
 extern void led_on3(void);
 
-
+extern void LCD_Clear_Display();
 
 const Runnable_t rInfo[_Runnable_Count]={
 		[Runnable_1]={
-				.periodicty=100,
-				.Cb=led_on1
+				.periodicty=2,
+				.Cb=LCD_Task
 		}
 		,
 		[Runnable_2]={
@@ -33,7 +34,7 @@ const Runnable_t rInfo[_Runnable_Count]={
 		}
 		,
 		[Traffic_Lightss]={
-				.periodicty=500000,
-				.Cb=Traffic_Lights	}
+				.periodicty=1000,
+				.Cb=LCD_Clear_Display	}
 
 };

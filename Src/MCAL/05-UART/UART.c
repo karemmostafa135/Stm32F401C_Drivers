@@ -95,6 +95,9 @@ Uart_ConfigType * Global_Config_Ptr[3];
 void UART_Init(Uart_ConfigType * Uart_Config){
 	uint32_t CR1_Helper=0;
 	uint32_t Mantissa_Helper=0;
+	uint32_t Loc_u32TempValue;
+		uint16_t	Loc_u16TempMantissa;
+		uint16_t Loc_u16TempFraction;
 if(Uart_Config){
 if (Uart_Config->Channel==UART1){
 	RCC_APB2ENR_Enable_Disable_peri(APB2ENR_USART1EN, ENABLE_PERI);
@@ -112,10 +115,18 @@ else{
 	// wrong peripheral
 }
 // to get the mantissa value from the given baud rate
-Mantissa_Helper=(CLK_FREQ/(8*(2-Uart_Config->Oversampling)*Uart_Config->BaudRate));
+
+Loc_u32TempValue=((uint64_t)CLK_FREQ * 1000)/(Uart_Config->BaudRate * (8 * (2 - Uart_Config->Oversampling)));
+		Loc_u16TempFraction = (Loc_u32TempValue % 1000) * (8 * (2 - Uart_Config->Oversampling));
+		Loc_u16TempFraction = Loc_u16TempFraction / 1000;
+		if(Loc_u16TempFraction > 0xF)
+		{
+			Loc_u16TempMantissa += (Loc_u16TempFraction & 0xF0);
+		}
+		Loc_u16TempMantissa = Loc_u32TempValue / 1000;
 
 /************* configuring the BRR Register***************/
-((UART_Registers_t*)(Uart_Config->Channel))->BRR|=(Mantissa_Helper<<POSITION_OF_MANTISSA);
+((UART_Registers_t*)(Uart_Config->Channel))->BRR|=(Loc_u16TempMantissa << 4) | (Loc_u16TempFraction & 0x0F);
 
 /************** configuring the CR1 Register **************/
  CR1_Helper=((UART_Registers_t*)(Uart_Config->Channel))->CR1;

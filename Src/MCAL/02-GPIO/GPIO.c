@@ -80,13 +80,13 @@ GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config){
 				((GPIO_t*)(Pin_Config->Port_num))->AFRL|=(Pin_Config->Af<<(4*Pin_Config->Pin_num));
 			}
 				else if(Pin_Config->Pin_num>7){
-					((GPIO_t*)(Pin_Config->Port_num))->AFRH|=(Pin_Config->Af<<(4*Pin_Config->Pin_num));
+					((GPIO_t*)(Pin_Config->Port_num))->AFRH|=(Pin_Config->Af<<(4*(Pin_Config->Pin_num-8)));
 				}
 
 		}
 	}
 	return Loc_Error_Status;
-}
+ss}
 
 
 GPIO_Error_t GPIO_Set_Pin_Value(void *port, uint32_t Pin_num, uint32_t value) {

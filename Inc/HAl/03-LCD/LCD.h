@@ -17,8 +17,8 @@ typedef enum{
 		D5_PIN,
 		D6_PIN,
 		D7_PIN,
-		RW_PIN,
 		RS_PIN,
+		RW_PIN,
 		EN_PIN,
 		NUMBER_OF_LCD_PINS
 	}LCD_eDataPins;
@@ -28,6 +28,8 @@ void LCD_Init_Asynch();
 
 void LCD_Write_String_NoCopy(uint8_t * str,uint32_t length ,uint8_t Copy_u8Row, uint8_t Copy_u8Column);
 
+void LCD_Clear_Display();
 
+void LCD_Write_Command_NoCopy(uint8_t Command);
 
 #endif
