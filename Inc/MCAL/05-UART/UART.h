@@ -59,6 +59,10 @@ void UART_RecieveData_Async(Buffer_t *Data_Buffer,Tx_cb Call_back);
 
 void UART_SendByte(Buffer_t *Data_Buffer);
 
+void UART_SendBufferDma(void * Channel);
+
+void UART_RecieveBufferDma(void * Channel);
+
 uint8_t UART_GetTx_State(void);
 
 uint8_t UART_GetRx_State(void);

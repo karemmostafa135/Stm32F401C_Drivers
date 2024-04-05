@@ -29,6 +29,10 @@
 #define 	CR1_RWU			1			// 1 Receiver in mute mode , 0 Receiver in active mode
 #define 	CR1_SBK			0			// 1: Break character will be transmitted ,0: No break character is transmitted
 #define  	CR1_RESET		0x00000000
+
+/* USART CR3 pins*/
+#define  CR3_DMAT			7
+#define  CR3_DMAR			6
 /*BRR pins
  * from pin 15 to pin 4 represents mantisaa
  * from pin 3 to pin 0 represents Divison factor
@@ -227,7 +231,7 @@ void UART_SendByte(Buffer_t *Data_Buffer){
 	}
 
 }
-void UART_RecieveData_Async(Buffer_t *Data_Buffer,Tx_cb Call_back){
+void UART_RecieveData_Async(Buffer_t *Data_Buffer,Rx_cb Call_back){
 	/*************** to check if the required peripheral to receive data is UART1 *************/
 		if(Data_Buffer->Channel==UART1){
 		if(Tx_User_Request[UART1_RX_REQUEST].state==READY){
@@ -283,6 +287,14 @@ void UART_RecieveData_Async(Buffer_t *Data_Buffer,Tx_cb Call_back){
 			}
 }
 
+void UART_SendBufferDma(void * Channel){
+	((UART_Registers_t*)(Channel))->CR3|=(1<<CR3_DMAT);
+}
+
+void UART_RecieveBufferDma(void * Channel){
+	((UART_Registers_t*)(Channel))->CR3|=(1<<CR3_DMAR);
+}
+
 void USART1_IRQHandler(void){
 /****** to check out if the tranmission register is empty pin that caused the interrupt **************/
 if(((UART_Registers_t*)(UART1))->SR&1<<SR_TC){
@@ -293,7 +305,6 @@ if(((UART_Registers_t*)(UART1))->SR&1<<SR_TC){
 	((UART_Registers_t*)(UART1))->DR=(Tx_User_Request[UART1_TX_REQUEST].Tx_Buffer->data[Tx_User_Request[UART1_TX_REQUEST].pos]);
 	Tx_User_Request[UART1_TX_REQUEST].pos++;
 	// to clear the transmission complete pin
-	((UART_Registers_t*)(UART1))->SR&=~(1<<SR_TC);
 	}
 	else{
 		Tx_User_Request[UART1_TX_REQUEST].Cb();
@@ -319,5 +330,36 @@ if(((UART_Registers_t*)(UART1))->SR&1<<SR_TC){
 }
 
 void USART2_IRQHandler(void){
+	/****** to check out if the tranmission register is empty pin that caused the interrupt **************/
+	if(((UART_Registers_t*)(UART2))->SR&1<<SR_TC){
+		// to clear the transmission complete pin
+			((UART_Registers_t*)(UART2))->SR&=~(1<<SR_TC);
+		/**************** to check that the current position of data is less than the buffer size*****/
+		if(Tx_User_Request[UART2_TX_REQUEST].pos<Tx_User_Request[UART2_TX_REQUEST].Tx_Buffer->size){
+		((UART_Registers_t*)(UART1))->DR=(Tx_User_Request[UART2_TX_REQUEST].Tx_Buffer->data[Tx_User_Request[UART2_TX_REQUEST].pos]);
+		Tx_User_Request[UART2_TX_REQUEST].pos++;
+		// to clear the transmission complete pin
+		((UART_Registers_t*)(UART2))->SR&=~(1<<SR_TC);
+		}
+		else{
+			Tx_User_Request[UART2_TX_REQUEST].Cb();
+			Tx_User_Request[UART2_TX_REQUEST].state=READY;
+			((UART_Registers_t*)(UART2))->SR&=~(1<<SR_TC);
+		}
 
+		if(((UART_Registers_t*)(UART2))->SR&1<<SR_RXNE){
+			if(Rx_User_Request[UART2_RX_REQUEST].pos<Rx_User_Request[UART2_RX_REQUEST].Rx_Buffer->size){
+			(Rx_User_Request[UART2_TX_REQUEST].Rx_Buffer->data[Rx_User_Request[UART2_RX_REQUEST].pos])=((UART_Registers_t*)(UART2))->DR;
+				Rx_User_Request[UART2_TX_REQUEST].pos++;
+				// to clear the recieve data pin
+				((UART_Registers_t*)(UART2))->SR&=~(1<<SR_RXNE);
+				}
+				else{
+					Rx_User_Request[UART2_RX_REQUEST].Cb();
+					Rx_User_Request[UART2_RX_REQUEST].state=READY;
+					// to clear the recieve data pin
+					((UART_Registers_t*)(UART2))->SR&=~(1<<SR_RXNE);
+				}
+		}
+	}
 }

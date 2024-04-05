@@ -86,7 +86,7 @@ GPIO_Error_t GPIO_PinConfig(Pin_Config_t *Pin_Config){
 		}
 	}
 	return Loc_Error_Status;
-ss}
+}
 
 
 GPIO_Error_t GPIO_Set_Pin_Value(void *port, uint32_t Pin_num, uint32_t value) {
