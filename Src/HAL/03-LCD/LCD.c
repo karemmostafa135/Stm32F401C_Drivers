@@ -1,9 +1,10 @@
+#include "stdio.h"
 #include "GPIO_interface.h"
 #include "LCD.h"
 
 /****************** macros for lcd commands ************/
 #define LCD_FUNCTION_SET_MASK		0x38
-#define LCD_DISPLAY_ON_OFF_MASK		0x11
+#define LCD_DISPLAY_ON_OFF_MASK		0x0F
 #define LCD_DISPLAY_CLEAR_MASK		0x01
 #define LCD_ENTRY_MODE_MASK			0x06
 #define LCD_SHIFT_LEFT_MASK			0x18
@@ -17,21 +18,31 @@
 #define FIRST_LINE			0
 #define SECOND_LINE			1
 
+#define NUMBER_OF_REQUESTES				13
+#define DATE_TIME_MODE					0
+#define STOP_WATCH_MODE					1
+
+#define CHANGED							1
+#define NOT_CHANGED						0
 
  void Init_Sm();
 
  void LCD_Write_Command(uint8_t Command);
 
- void LCD_Write_Command_Helper(void);
 
+ void Sec_Increment_Task(void);
  void LCD_Write_Data(uint8_t Data);
 
  void LCD_Write_String_Helper(void);
 
+ void LCD_Write_Number_Helper();
+
+ void Write_Date_Time_Task();
+
  void LCD_Set_Cursor_Helper();
+
  void LCD_Clear_Display_Helper();
 
-void LCD_enuGotoDDRAM_XY(uint8_t Copy_u8Row, uint8_t Copy_u8Column);
 
 extern LCD_pin_Cfg LCD_Pins_Config[NUMBER_OF_LCD_PINS];
 
@@ -41,13 +52,25 @@ extern LCD_pin_Cfg LCD_Pins_Config[NUMBER_OF_LCD_PINS];
 #define ENABLE_PIN_HIGH				1
 
 
-#define READY		1
+#define READY		0
 
-#define BUSY		0
+#define BUSY		1
+
+typedef enum{
+	year,
+	month,
+	day,
+	hours,
+	minutes,
+	seconds,
+	milliseconds,
+	end
+}Date_Time_t;
 
 
 typedef struct{
-	const uint8_t * s;
+	uint8_t * s;
+	uint8_t Number[10];
 	uint8_t length;
 	uint8_t state;
 	uint8_t Type;
@@ -66,6 +89,20 @@ typedef enum{
 	Operation,
 	Off
 }LCD_State;
+
+typedef struct{
+	uint32_t	Year;
+	uint32_t	Month;
+	uint32_t	Day;
+}Current_Date;
+
+typedef struct
+{
+	uint32_t 	Hours;
+	uint32_t	Minutes;
+	uint32_t	Seconds;
+
+}Current_Time;
 
 /***************** request types enum *********************/
 
@@ -97,19 +134,245 @@ uint8_t Enable_Pin_State=ENABLE_PIN_LOW;
 
 LCD_XY_Values Cordinates;
 
+Date_Time_t Current=year;
 
-static User_Req Req
+/************** to get the current time to display *******************/
+Current_Time Time={
+.Hours=11,
+.Minutes=22,
+.Seconds=14
+};
+
+
+Current_Date Date={
+		.Year=2024,
+		.Month=4,
+		.Day=5
+};
+
+static User_Req Req[NUMBER_OF_REQUESTES]
 ={
-		.s=NULL,
+	[0]={.s=NULL,
 		.length=0,
 		.state=READY,
 		.Type=None,
 		.Cursor_Pos=0,
-		.Command=0
+		.Command=0,
+		.Number={0}
+	},
+
+	[1]={.s=NULL,
+		.length=0,
+		.state=READY,
+		.Type=None,
+		.Cursor_Pos=0,
+		.Command=0,
+		.Number={0}
+	},
+
+	[2]={.s=NULL,
+		.length=0,
+		.state=READY,
+		.Type=None,
+		.Cursor_Pos=0,
+		.Command=0,
+		.Number={0}
+	},
+	[3]={.s=NULL,
+			.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+		},
+		[4]={.s=NULL,
+			.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+			},
+			[5]={.s=NULL,
+					.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+		},
+				[6]={.s=NULL,
+						.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+		},
+		[7]={.s=NULL,
+						.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+		},
+		[8]={.s=NULL,
+						.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+		},
+		[9]={.s=NULL,
+						.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+		},
+		[10]={.s=NULL,
+						.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+		},
+		[11]={.s=NULL,
+						.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+		},
+		[12]={.s=NULL,
+						.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+		},
+		[13]={.s=NULL,
+						.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+		},
+		[14]={.s=NULL,
+						.length=0,
+			.state=READY,
+			.Type=None,
+			.Cursor_Pos=0,
+			.Command=0,
+			.Number={0}
+		},
 };
 
+volatile static uint8_t Request_Index=0;
 
 
+volatile static uint8_t Counter_to_Clear_Screen=0;
+volatile uint8_t Curren_Display_Mode=DATE_TIME_MODE;
+uint8_t Change_Of_Time=CHANGED;
+
+/*** task to write the date and time on lcd ***/
+void Write_Date_Time_Task(){
+	/*to clear the display at the first time of this task */
+	if(Curren_Display_Mode==DATE_TIME_MODE){
+	/*if(Counter_to_Clear_Screen==0){
+	LCD_Clear_Display_Asynch();
+	Counter_to_Clear_Screen++;
+	}*/
+	if(Change_Of_Time==CHANGED){
+	LCD_Clear_Display_Asynch();
+	/**** to init the cursor position */
+	LCD_Set_Cursor_Asynch(0,0);
+  /* to print the date : YEAR/MONTH/DAY */
+   LCD_Wrtite_Number_Asynch(Date.Year);
+   LCD_Set_Cursor_Asynch(0,5);
+   //LCD_Write_Data('/');
+   LCD_Wrtite_Number_Asynch(Date.Month);
+   LCD_Set_Cursor_Asynch(0,7);
+   //LCD_Write_Data('/');
+     LCD_Wrtite_Number_Asynch(Date.Day);
+
+     /* Set the cursor on the second Line */
+    LCD_Set_Cursor_Asynch(1,2);
+
+     /* to print the Time : HOURS:MINUTES:SECONDS */
+     LCD_Wrtite_Number_Asynch(Time.Hours);
+     //LCD_Write_Data(':');
+     LCD_Set_Cursor_Asynch(1,6);
+     LCD_Wrtite_Number_Asynch(Time.Minutes);
+     //LCD_Write_Data(':');
+     LCD_Set_Cursor_Asynch(1,9);
+    LCD_Wrtite_Number_Asynch(Time.Seconds);
+     Change_Of_Time=NOT_CHANGED;
+	}
+	}
+
+}
+
+//task every 1000 miliSecond
+void Sec_Increment_Task(void)
+{
+  Time.Seconds++ ;
+  Change_Of_Time=CHANGED;
+  if(Time.Seconds==60)
+  {
+    Time.Minutes++ ;
+    Time.Seconds = 0 ;
+  }
+  else
+  {
+    // do nothing
+  }
+  if(Time.Minutes == 60 )
+  {
+    Time.Hours++ ;
+    Time.Minutes = 0 ;
+  }
+  else
+  {
+    // do nothing
+  }
+  if(Time.Hours == 24)
+  {
+    Date.Day++ ;
+    Time.Hours = 0 ;
+  }
+  else
+  {
+    // do nothing
+  }
+  if(Date.Day == 30)
+  {
+    Date.Month++ ;
+    Date.Day = 0 ;
+  }
+  else
+  {
+    // do nothing
+  }
+  if(Date.Month == 12)
+  {
+    Date.Year++ ;
+    Date.Month = 0 ;
+  }
+  else
+  {
+    // do nothing
+  }
+
+}
 
 void LCD_Init_Asynch(){
 	 Lcd_State=Init;
@@ -122,27 +385,36 @@ void LCD_Task(){
 		Init_Sm();
 	}
 	else if (Lcd_State==Operation){
-		switch(Req.Type){
+		switch(Req[Request_Index].Type){
 		case Write_Data:
 			//LCD_enuGotoDDRAM_XY(Cordinates.X_pos,Cordinates.Y_pos);
 			LCD_Write_String_Helper();
+			//increment the index and break
 		break;
 		case Clear_Display:
 			LCD_Clear_Display_Helper();
+			break;
 		case Set_Cursor:
 			LCD_Set_Cursor_Helper();
+			break;
+		case Write_Number:
+			LCD_Write_Number_Helper();
 		break;
 		}
 	}
-
+//to reset the Request index
+	if(Request_Index==NUMBER_OF_REQUESTES){
+		Request_Index=0;
+	}
 }
 
-void LCD_Set_Cursor(uint8_t Copy_u8Row, uint8_t Copy_u8Column){
+void LCD_Set_Cursor_Asynch(uint8_t Copy_u8Row, uint8_t Copy_u8Column){
 	uint8_t Loc_u8Location =0;
-	if(Req.state==READY){
-		Req.state=BUSY;
-		Req.Type=Set_Cursor;
-
+	uint8_t counter=0;
+	for(counter;counter<NUMBER_OF_REQUESTES;counter++){
+	if(Req[counter].state==READY){
+		Req[counter].state=BUSY;
+		Req[counter].Type=Set_Cursor;
 		if(Copy_u8Row==FIRST_LINE){
 			Loc_u8Location=Copy_u8Column;
 		}
@@ -152,7 +424,9 @@ void LCD_Set_Cursor(uint8_t Copy_u8Row, uint8_t Copy_u8Column){
 		else{
 			//do noting
 		}
-		Req.Cursor_Pos=LCD_SET_DDRAM_ADRESS+Loc_u8Location;
+		Req[counter].Command=LCD_SET_DDRAM_ADRESS+Loc_u8Location;
+		counter=NUMBER_OF_REQUESTES; // to terminate from the loop
+	}
 	}
 }
 
@@ -210,6 +484,150 @@ case End:
 	break;
 
 }
+}
+
+
+/********************* to get the string from the user **************/
+void LCD_Write_String_NoCopy(uint8_t * str,uint32_t length){
+	uint8_t counter=0;
+	if(str){
+			for(counter;counter<NUMBER_OF_REQUESTES;counter++){
+if(Req[counter].state==READY){
+	Req[counter].state=BUSY;
+	Req[counter].s=str;
+	Req[counter].length=length;
+	Req[counter].Type=Write_Data;
+	counter=NUMBER_OF_REQUESTES; // to terminate from the loop
+}
+			}
+	}
+}
+
+/************************* to get command request from the user *************/
+void LCD_Clear_Display_Asynch(){
+	uint8_t counter=0;
+	for(counter;counter<NUMBER_OF_REQUESTES;counter++){
+	if(Req[counter].state==READY){
+		Req[counter].state=BUSY;
+		Req[counter].Command=LCD_DISPLAY_CLEAR_MASK;
+		Req[counter].Type=Clear_Display;
+		counter=NUMBER_OF_REQUESTES; // to terminate from the loop
+}
+	}
+}
+
+/****************** helper function to clear the displayy**********/
+void LCD_Clear_Display_Helper(){
+LCD_Write_Command(Req[Request_Index].Command);
+if(Enable_Pin_State==ENABLE_PIN_LOW){
+	Req[Request_Index].Type=None;
+	Req[Request_Index].state=READY;
+	Request_Index++;
+	}
+}
+
+
+
+/******************* function to write number *************/
+void LCD_Wrtite_Number_Asynch(uint32_t Copy_number){
+	uint8_t counter=0;
+	uint8_t digit=0;
+		for(counter;counter<NUMBER_OF_REQUESTES;counter++){
+	if(Req[counter].state==READY){
+
+		Req[counter].state=BUSY;
+		Req[counter].Type=Write_Number;
+
+		if(Copy_number == 0) {
+						LCD_Write_Data('0');
+				}
+
+				if(Copy_number < 0) {
+					LCD_Write_Data('-');
+					Copy_number = -Copy_number; // Convert negative number to positive
+				}
+
+				// Array to hold digits in reverse order
+				uint32_t index = 0;
+
+				// Extract digits from right to left
+				while(Copy_number > 0) {
+					digit = Copy_number % 10;
+					Req[counter].Number[index++] = digit + '0'; // Convert digit to ASCII character
+					Copy_number /= 10;
+				}
+				Req[counter].length=index;
+				counter=NUMBER_OF_REQUESTES; // to terminate from the loop
+	}
+
+
+	}
+
+}
+
+/************************ helper function to write number ************/
+void LCD_Write_Number_Helper(){
+		static uint8_t iterator=0;
+/******************** set the needed position **************/
+
+
+	if(iterator<Req[Request_Index].length){
+			LCD_Write_Data(Req[Request_Index].Number[Req[Request_Index].length-iterator-1]);
+			if(Enable_Pin_State==ENABLE_PIN_LOW){
+			iterator++;
+			}
+
+	}
+	// when writing the string finish
+	else{
+		Req[Request_Index].Type=None;
+		Req[Request_Index].state=READY;
+		 memset(Req[Request_Index].Number, 0, sizeof(Req[Request_Index].Number));
+		Request_Index++;
+		iterator=0;
+	}
+}
+
+/********************* helper function to write the string on lcd *******/
+void LCD_Write_String_Helper(void){
+	static uint8_t iterator=0;
+/******************** set the needed position **************/
+
+
+	if(iterator<Req[Request_Index].length){
+			LCD_Write_Data(Req[Request_Index].s[iterator]);
+			if(Enable_Pin_State==ENABLE_PIN_LOW){
+			iterator++;
+			}
+
+	}
+	// when writing the string finish
+	else{
+		Req[Request_Index].Type=None;
+		Req[Request_Index].state=READY;
+		Request_Index++;
+		iterator=0;
+	}
+}
+
+void LCD_Write_Command_Helper(){
+	LCD_Write_Command(Req[Request_Index].s[0]);
+	if(Enable_Pin_State==ENABLE_PIN_LOW){
+		Req[Request_Index].Type=None;
+		Req[Request_Index].state=READY;
+		Request_Index++;
+	}
+}
+
+
+void LCD_Set_Cursor_Helper()
+{
+LCD_Write_Command(Req[Request_Index].Command);
+if(Enable_Pin_State==ENABLE_PIN_LOW){
+		Req[Request_Index].Type=None;
+		Req[Request_Index].state=READY;
+		Request_Index++;
+	}
 }
 
 
@@ -275,81 +693,6 @@ Enable_Pin_State=ENABLE_PIN_HIGH;
 
 }
 
-/********************* to get the string from the user **************/
-void LCD_Write_String_NoCopy(uint8_t * str,uint32_t length,uint8_t Copy_u8Row, uint8_t Copy_u8Column){
-	if(str){
-if(Req.state==READY){
-	Req.state=BUSY;
-	Req.s=str;
-	Req.length=length;
-	Req.Type=Write_Data;
-	//Cordinates.X_pos=Copy_u8Row;		// to set the x-axis value
-	//Cordinates.Y_pos=Copy_u8Column;		// to set the y-axis value
-	//iterator=0; // to initialize the iterator for Lcd_Write_String_Helper function
-}
-	}
-}
-
-/************************* to get command request from the user *************/
-void LCD_Clear_Display(){
-
-	if(Req.state==READY){
-		Req.state=BUSY;
-		Req.Command=LCD_DISPLAY_CLEAR_MASK;
-		Req.length=1;
-		Req.Type=Clear_Display;
-}
-}
-
-/****************** helper function to clear the displayy**********/
-void LCD_Clear_Display_Helper(){
-LCD_Write_Command(Req.Command);
-if(Enable_Pin_State==ENABLE_PIN_LOW){
-		Req.Type=None;
-		Req.state=READY;
-	}
-}
-
-
-
-/********************* helper function to write the string on lcd *******/
-void LCD_Write_String_Helper(void){
-	static uint8_t iterator=0;
-/******************** set the needed position **************/
-
-
-	if(iterator<Req.length){
-			LCD_Write_Data(Req.s[iterator]);
-			if(Enable_Pin_State==ENABLE_PIN_LOW){
-			iterator++;
-			}
-
-	}
-	// when writing the string finish
-	else{
-		Req.Type=None;
-		Req.state=READY;
-		iterator=0;
-	}
-}
-
-void LCD_Write_Command_Helper(){
-	LCD_Write_Command(Req.s[0]);
-	if(Enable_Pin_State==ENABLE_PIN_LOW){
-		Req.Type=None;
-		Req.state=READY;
-	}
-}
-
-
-void LCD_Set_Cursor_Helper()
-{
-LCD_Write_Command(Req.Cursor_Pos);
-if(Enable_Pin_State==ENABLE_PIN_LOW){
-		Req.Type=None;
-		Req.state=READY;
-	}
-}
 
 
 
@@ -357,18 +700,4 @@ if(Enable_Pin_State==ENABLE_PIN_LOW){
 
 
 
-/*
-void LCD_enuGotoDDRAM_XY(uint8_t Copy_u8Row, uint8_t Copy_u8Column){
-	uint8_t Loc_u8Location =0;
-	if(Copy_u8Row==FIRST_LINE){
-		Loc_u8Location=Copy_u8Column;
-	}
-	else if (Copy_u8Row==SECOND_LINE){
-		Loc_u8Location=Copy_u8Column+0x40 ;
-	}
-	else{
-	}
-	/********** SET_DDRAM_Adress = 64 as we need to but Data Pin 7 equal 1 ***********/
-	//LCD_Write_Command(LCD_SET_DDRAM_ADRESS+Loc_u8Location);
-//}
 

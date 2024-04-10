@@ -26,9 +26,13 @@ typedef enum{
 
 void LCD_Init_Asynch();
 
-void LCD_Write_String_NoCopy(uint8_t * str,uint32_t length ,uint8_t Copy_u8Row, uint8_t Copy_u8Column);
+void LCD_Write_String_NoCopy(uint8_t * str,uint32_t length);
 
-void LCD_Clear_Display();
+void LCD_Wrtite_Number_Asynch(uint32_t Copy_number);
+
+void LCD_Clear_Display_Asynch();
+
+void LCD_Set_Cursor_Asynch(uint8_t Copy_u8Row, uint8_t Copy_u8Column);
 
 void LCD_Write_Command_NoCopy(uint8_t Command);
 

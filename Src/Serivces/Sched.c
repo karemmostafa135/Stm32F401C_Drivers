@@ -6,7 +6,7 @@ static uint32_t Global_Number_of_pending_Ticks=0;
 static uint32_t Global_Number_of_Sys_Ticks=0;
 
 
-extern const Runnable_t rInfo[_Runnable_Count];
+extern  Runnable_t rInfo[_Runnable_Count];
 
 void led(void){
 
@@ -24,9 +24,10 @@ void Sched(){
 	uint32_t idx=0;
 	Global_Number_of_Sys_Ticks+=SCHED_TIME_IN_MS;
 	for(idx;idx<_Runnable_Count;idx++){
-			if((rInfo[idx].Cb)&&!(Global_Number_of_Sys_Ticks%rInfo[idx].periodicty)){
+	if((rInfo[idx].Cb)&&!(Global_Number_of_Sys_Ticks%rInfo[idx].periodicty)&&(rInfo[idx].First_Delay<=0)){
 				rInfo[idx].Cb();
 			}
+	rInfo[idx].First_Delay--;
 	}
 
 }
@@ -43,7 +44,7 @@ void Sched_Start(){
 }
 
 void Sched_Stop(){
-
+	SYSTICK_Stop();
 
 }
 

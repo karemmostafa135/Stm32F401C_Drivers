@@ -36,15 +36,15 @@ LCD_pin_Cfg LCD_Pins_Config[NUMBER_OF_LCD_PINS]={
 		.pin=GPIO_PIN7
 },
 [RS_PIN]={
-		.port=GPIOB,
+		.port=GPIOA,
 		.pin=GPIO_PIN8
 },
 [RW_PIN]={
-		.port=GPIOB,
+		.port=GPIOA,
 		.pin=GPIO_PIN9
 },
 [EN_PIN]={
-		.port=GPIOB,
+		.port=GPIOA,
 		.pin=GPIO_PIN10
 },
 };

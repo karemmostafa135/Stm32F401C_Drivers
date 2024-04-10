@@ -231,7 +231,7 @@ void UART_SendByte(Buffer_t *Data_Buffer){
 	}
 
 }
-void UART_RecieveData_Async(Buffer_t *Data_Buffer,Rx_cb Call_back){
+void UART_RecieveData_Async(Buffer_t *Data_Buffer,Tx_cb Call_back){
 	/*************** to check if the required peripheral to receive data is UART1 *************/
 		if(Data_Buffer->Channel==UART1){
 		if(Tx_User_Request[UART1_RX_REQUEST].state==READY){

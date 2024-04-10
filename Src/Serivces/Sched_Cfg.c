@@ -7,34 +7,35 @@ typedef enum {
 }SWITCH_Errors_t;
 
 
-extern void Traffic_Lights(void);
-
 extern void Switch_task();
 
 extern void LCD_Task();
 
 
-extern void led_on1(void);
+extern void Write_Date_Time_Task();
 
-extern void led_on2(void);
 
-extern void led_on3(void);
+extern void Sec_Increment_Task(void);
 
-extern void LCD_Clear_Display();
 
-const Runnable_t rInfo[_Runnable_Count]={
+
+ Runnable_t rInfo[_Runnable_Count]={
 		[Runnable_1]={
 				.periodicty=2,
-				.Cb=LCD_Task
+				.Cb=LCD_Task,
+				.First_Delay=0
 		}
 		,
 		[Runnable_2]={
-				.periodicty=5,
-				.Cb=Switch_task
+				.periodicty=2,
+				.Cb=Write_Date_Time_Task,
+				.First_Delay=25
+
 		}
 		,
 		[Traffic_Lightss]={
 				.periodicty=1000,
-				.Cb=LCD_Clear_Display	}
-
-};
+				.Cb=Sec_Increment_Task,
+				.First_Delay=50
+		}
+	};

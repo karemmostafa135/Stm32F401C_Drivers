@@ -234,6 +234,7 @@ Dma_ErrorStatus_t DMA_Stream_Set_State(Dma_Id_t  Selected_Dma,Stream_Id_t Stream
 				}
 
 	}
+	return Local_Error_Status;
 }
 
 void DMA1_Stream0_IRQHandler(void){
